@@ -1,4 +1,10 @@
-scala-clean-code-patterns
+Scala clean code patterns
 =========================
 
-Explore the use of different patterns to produce clean code
+In this repository I am exploring different design patterns against real problems. I 
+am trying to find the different tradeoffs of using these patterns.
+
+# Processes
+
+The processes part investigates writing processes consisting of multiple steps. Check 
+the [README](tree/master/processes) for more information.
