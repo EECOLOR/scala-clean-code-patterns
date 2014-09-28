@@ -81,14 +81,14 @@ The versions:
 - [vanillaScala.Plain](monadTransformers/vanillaScala/Plain.scala)
 - [vanillaScala.Enhanced](monadTransformers/vanillaScala/Enhanced.scala)
 
-Pros:
+*Pros*
 
 - Clearly conveys the important parts of the process
 - Relatively easy to understand
 - Separates the construction and implementation from the execution
 - Small amount of boilerplate
 
-Cons:
+*Cons*
 
 - You need to know the resulting type when you start, this can be tricky. In this 
   example we needed an `EitherT[Future, Result, A]`
