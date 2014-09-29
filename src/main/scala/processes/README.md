@@ -241,4 +241,8 @@ loosing the information that `F` and `G` are container types.
 Things will become more complex when we introduce these program combinators, but they 
 also allow us to compose programs more freely and from different sources.
 
+The talk [Compositional application architecture with reasonably priced monads](https://parleys.com/play/53a7d2c3e4b0543940d9e538) 
+with [the slides](https://t.co/QsBDMDqGGE) and [code](https://gist.github.com/runarorama/a8fab38e473fafa0921d) by Rúnar Bjarnason provide a good explanation about this 
+topic. 
+
 *in progress*   
