@@ -1,13 +1,14 @@
-package test
+package processes.vanillaScala
 
 import scala.concurrent.Future
-
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import processes.PatchAssignment
+import processes.Services
+import scala.util.Try
 
-object RegularScala extends PatchAssignment {
+class VanillaScala(services: Services) extends PatchAssignment {
 
   import domain.Profile
 
@@ -15,7 +16,6 @@ object RegularScala extends PatchAssignment {
     services.parseJson(request)
       .map(convertToProfileAndUpdate(id))
       .getOrElse(toFuture(results.badRequest))
-      .recover(PartialFunction(results.internalServerError))
 
   private def convertToProfileAndUpdate(id: String)(json: JsValue) =
     services.jsonToProfile(json)

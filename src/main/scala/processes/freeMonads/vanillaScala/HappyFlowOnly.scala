@@ -7,8 +7,9 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
+import processes.Services
 
-object HappyFlowOnly extends PatchAssignment with Machinery {
+class HappyFlowOnly(services:Services) extends PatchAssignment with Machinery {
 
   import domain.Profile
 
@@ -29,9 +30,7 @@ object HappyFlowOnly extends PatchAssignment with Machinery {
         _ <- UpdateProfile(id, mergedProfile)
       } yield results.noContent
 
-    patchProgram.run(PatchProgramRunner)
-      .map(_.merge)
-      .recover(PartialFunction(results.internalServerError))
+    patchProgram.run(PatchProgramRunner).map(_.merge)
   }
 
   object PatchProgramRunner extends (Method ~> HttpResult) {

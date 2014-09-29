@@ -4,8 +4,9 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import processes.PatchAssignment
 import processes.monadTransformers.Enhancements
+import processes.Services
 
-object Enhanced extends PatchAssignment with Machinery with Enhancements {
+class Enhanced(services:Services) extends PatchAssignment with Machinery with Enhancements {
 
   def handlePatchRequest(id: String, request: Request[AnyContent]) = {
     val patchProgram =
@@ -17,9 +18,7 @@ object Enhanced extends PatchAssignment with Machinery with Enhancements {
         _ <- services.updateProfile(id, mergedProfile).toResult
       } yield results.noContent
 
-    patchProgram.run
-      .map(_.merge)
-      .recover(PartialFunction(results.internalServerError))
+    patchProgram.run.map(_.merge)
   }
 }
 

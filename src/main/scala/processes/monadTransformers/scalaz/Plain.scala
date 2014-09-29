@@ -3,8 +3,9 @@ package processes.monadTransformers.scalaz
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import processes.PatchAssignment
+import processes.Services
 
-object Plain extends PatchAssignment with ScalazMachinery {
+class Plain(services:Services) extends PatchAssignment with ScalazMachinery {
 
   def handlePatchRequest(id: String, request: Request[AnyContent]) = {
     val patchProgram =
@@ -21,8 +22,6 @@ object Plain extends PatchAssignment with ScalazMachinery {
           HttpResult.fromAnyFuture
       } yield results.noContent
 
-    patchProgram.run
-      .map(_.merge)
-      .recover(PartialFunction(results.internalServerError))
+    patchProgram.run.map(_.merge)
   }
 }

@@ -30,9 +30,11 @@ protected def handlePatchRequest(id: String, request: Request[AnyContent]): Futu
 
 It also contains serveral utilities:
 
-- `domain` - Contains the profile representation
-- `services` - Contains the different methods that are at our disposal
 - `results` - Contains the different results that are expected
+- `defaultExecutionContext` - an implicit execution context
+
+The [`Services`](Services.scala) class contains the available service methods each 
+implementation can use.
 
 ### Vanilla Scala
 

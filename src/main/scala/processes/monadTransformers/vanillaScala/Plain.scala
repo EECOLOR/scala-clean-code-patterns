@@ -3,8 +3,9 @@ package processes.monadTransformers.vanillaScala
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import processes.PatchAssignment
+import processes.Services
 
-object Plain extends PatchAssignment with Machinery {
+class Plain(services:Services) extends PatchAssignment with Machinery {
 
   def handlePatchRequest(id: String, request: Request[AnyContent]) = {
     val patchProgram =
@@ -23,6 +24,5 @@ object Plain extends PatchAssignment with Machinery {
 
     patchProgram.run
       .map(_.merge)
-      .recover(PartialFunction(results.internalServerError))
   }
 }

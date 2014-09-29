@@ -1,7 +1,6 @@
 package processes
 
 import scala.concurrent.Future
-
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
 import play.api.libs.json.JsResult
@@ -11,11 +10,13 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
+import play.api.http.Status._
 import play.api.mvc.Results.BadRequest
 import play.api.mvc.Results.NoContent
 import play.api.mvc.Results.NotFound
 import play.api.mvc.Results.UnprocessableEntity
 import play.api.mvc.Results.InternalServerError
+import play.api.libs.json.JsString
 
 trait PatchAssignment {
   def patch(id: String): Action[AnyContent] =
@@ -36,32 +37,13 @@ trait PatchAssignment {
    * - merge the old and the new profile
    * - update the profile at id with the merged profile
    * - return NoContent if successful
-   *   - for unexpected errors, return InternalServerError 
    */
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result]
 
-  protected object domain {
-    case class Profile(email: Option[String], name: Option[String])
-  }
-
-  protected object services {
-    import domain.Profile
-
-    def parseJson(request: Request[AnyContent]): Option[JsValue] = ???
-
-    def jsonToProfile(json: JsValue): JsResult[Profile] = ???
-
-    def getProfileById(id: String): Future[Option[Profile]] = ???
-
-    def mergeProfile(oldProfile: Profile, newProfile: Profile): Profile = ???
-
-    def updateProfile(id: String, profile: Profile): Future[Unit] = ???
-  }
-
   protected object results {
-    val badRequest = BadRequest("expected json")
-
-    def notFound(id: String) = NotFound(s"not profile with id $id")
+    val badRequest = BadRequest(error(BAD_REQUEST, "expected json"))
+    
+    def notFound(id: String) = NotFound(error(NOT_FOUND, s"no profile with id '$id'"))
 
     private type JsErrors = Seq[(JsPath, Seq[ValidationError])]
     
@@ -69,18 +51,15 @@ trait PatchAssignment {
       val allErrors =
         errors.foldLeft(obj()) {
           case (errorObject, (path, errors)) =>
-            errorObject ++ obj(path.toString -> errors.map(_.toString))
+            errorObject ++ obj(path.toString -> errors.map(_.message))
         }
-      UnprocessableEntity(allErrors)
+      UnprocessableEntity(error(422, allErrors))
     }
     
     val noContent = NoContent
     
-    def internalServerError(t:Throwable) = {
-      // In production we would report this error (as side effect) to our bug tracker
-      // For example: https://github.com/Rhinofly/play-jira-exception-processor 
-      InternalServerError
-    }
+    private def error(status:Int, error:JsValue):JsValue = obj("status" -> status, "error" -> error)
+    private def error(status:Int, message:String):JsValue = error(status, JsString(message))
   }
 
   implicit val defaultExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
