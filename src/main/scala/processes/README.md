@@ -217,4 +217,9 @@ of the programs.
 
 The first example is the [`HappyFlowOnly`](freeMonads/vanillaScala/HappyFlowOnly.scala) class.
 This version focuses on the happy flow of the program and moves handling of the 
-not found, bad request, etc. results to the program runner. 
+not found, bad request, etc. results to the program runner.
+
+The second example is the [`Complete`](freeMonads/vanillaScala/Complete.scala) class.
+This version enhances the `Method` instances with functions like `ifEmpty` and 
+`ifError` that wrap the method call into another method call. This moves the non 
+happy cases into the the `handlePatchRequest` method.

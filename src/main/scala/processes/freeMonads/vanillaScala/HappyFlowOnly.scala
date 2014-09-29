@@ -34,9 +34,7 @@ object HappyFlowOnly extends PatchAssignment with Machinery {
       .recover(PartialFunction(results.internalServerError))
   }
 
-  type BranchedResult[A] = Future[Either[Result, A]]
-
-  object PatchProgramRunner extends (Method ~> BranchedResult) {
+  object PatchProgramRunner extends (Method ~> HttpResult) {
     def apply[A](fa: Method[A]) = fa match {
 
       case ParseJson(request: Request[AnyContent]) =>
@@ -71,15 +69,5 @@ object HappyFlowOnly extends PatchAssignment with Machinery {
           .updateProfile(id, profile)
           .map(Right.apply)
     }
-  }
-  
-  implicit val branchedResultMonad = new Monad[BranchedResult] {
-    def create[A](a: A) = Future successful Right(a)
-
-    def flatMap[A, B](fa: BranchedResult[A])(f: A => BranchedResult[B]) =
-      fa.flatMap {
-        case Left(result) => Future successful Left(result)
-        case Right(value) => f(value)
-      }
   }
 }
