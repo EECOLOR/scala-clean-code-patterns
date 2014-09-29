@@ -230,3 +230,15 @@ Both versions are implemented using Scalaz as well:
 
 - [`scalaz.HappyFlowOnly`](freeMonads/scalaz/HappyFlowOnly.scala)
 - [`scalaz.Complete`](freeMonads/scalaz/Complete.scala)
+
+It is possible have multiple types of programs. In the above examples a program part 
+extends `Method[ReturnType]`, it is however possible to combine multiple types. This 
+is done using a type called `Coproduct`. `Coproduct` is similar to `Either`, but it 
+operates on container types. We could have a `Coproduct` that represents an `String` 
+in `F[_]` or `G[_]`. With `Either` we can only represent `F[String]` or `G[String]` 
+loosing the information that `F` and `G` are container types.
+
+Things will become more complex when we introduce these program combinators, but they 
+also allow us to compose programs more freely and from different sources.
+
+*in progress*   
