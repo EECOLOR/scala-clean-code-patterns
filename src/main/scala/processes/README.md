@@ -225,3 +225,8 @@ The second example is the [`Complete`](freeMonads/vanillaScala/Complete.scala) c
 This version enhances the `Method` instances with functions like `ifEmpty` and 
 `ifError` that wrap the method call into another method call. This moves the non 
 happy cases into the the `handlePatchRequest` method.
+
+Both versions are implemented using Scalaz as well:
+
+- [`scalaz.HappyFlowOnly`](freeMonads/scalaz/HappyFlowOnly.scala)
+- [`scalaz.Complete`](freeMonads/scalaz/Complete.scala)

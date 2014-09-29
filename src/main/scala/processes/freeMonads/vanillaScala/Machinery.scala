@@ -5,8 +5,9 @@ import scala.language.implicitConversions
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import play.api.mvc.Result
+import processes.freeMonads.HttpResultImplementation
 
-trait Machinery {
+trait Machinery extends HttpResultImplementation {
 
   implicit protected def defaultExecutionContext: ExecutionContext
   
@@ -14,7 +15,7 @@ trait Machinery {
     FlatMap(fa, (a:A) => Create(a))
 
   trait ~>[-F[_], +G[_]] {
-    def apply[A](f: F[A]): G[A]
+    def apply[A](fa: F[A]): G[A]
   }
 
   sealed trait Free[F[_], A] {
@@ -45,15 +46,10 @@ trait Machinery {
     def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
   }
   
-  type HttpResult[A] = Future[Either[Result, A]]
-  
   implicit val httpResultMonad = new Monad[HttpResult] {
-    def create[A](a: A) = Future successful Right(a)
+    def create[A](a: A) = HttpResult(a)
 
     def flatMap[A, B](fa: HttpResult[A])(f: A => HttpResult[B]) =
-      fa.flatMap {
-        case Left(result) => Future successful Left(result)
-        case Right(value) => f(value)
-      }
+     HttpResult.flatMap(fa)(f)
   }
 }
