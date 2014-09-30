@@ -7,12 +7,12 @@ import scala.concurrent.Future
 import play.api.mvc.Result
 import processes.freeMonads.HttpResultImplementation
 
-trait Machinery extends HttpResultImplementation {
+trait Machinery extends HttpResultImplementation { self =>
 
   implicit protected def defaultExecutionContext: ExecutionContext
-  
-  implicit def toFree[F[_], A](fa: F[A]): Free[F, A] = 
-    FlatMap(fa, (a:A) => Create(a))
+
+  implicit def toFree[F[_], A](fa: F[A]): Free[F, A] =
+    FlatMap(fa, (a: A) => Create(a))
 
   trait ~>[-F[_], +G[_]] {
     def apply[A](fa: F[A]): G[A]
@@ -26,7 +26,7 @@ trait Machinery extends HttpResultImplementation {
       }
 
     def map[B](f: A => B): Free[F, B] =
-      flatMap(a => Create(f(a)))
+      flatMap((a: A) => Create(f(a)))
 
     def run[G[_]](runner: F ~> G)(implicit G: Monad[G]): G[A] =
       this match {
@@ -45,11 +45,20 @@ trait Machinery extends HttpResultImplementation {
     def create[A](a: A): F[A]
     def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
   }
-  
+
+  type Partial[F[_]] = {
+    type Free[A] = self.Free[F, A]
+  }
+  implicit def freeMonad[F[_]] = new Monad[Partial[F]#Free] {
+    def create[A](a: A) = Create(a)
+    def flatMap[A, B](fa: Free[F, A])(f: A => Free[F, B]) =
+      fa.flatMap(f)
+  }
+
   implicit val httpResultMonad = new Monad[HttpResult] {
     def create[A](a: A) = HttpResult(a)
 
     def flatMap[A, B](fa: HttpResult[A])(f: A => HttpResult[B]) =
-     HttpResult.flatMap(fa)(f)
+      HttpResult.flatMap(fa)(f)
   }
 }
