@@ -1,4 +1,4 @@
-package processes.freeMonads.vanillaScala
+package processes.freeMonads.vanillaScala.single
 
 import scala.language.higherKinds
 import scala.language.implicitConversions

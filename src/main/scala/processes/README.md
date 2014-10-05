@@ -217,16 +217,16 @@ The above example is of course too simple. In reality we have much more complica
 types like `Future`, `Either` and `Option`. The examples provide realistic versions 
 of the programs.
 
-The first example is the [`HappyFlowOnly`](freeMonads/vanillaScala/HappyFlowOnly.scala) class.
+The first example is the [`HappyFlowOnly`](freeMonads/vanillaScala/single/HappyFlowOnly.scala) class.
 This version focuses on the happy flow of the program and moves handling of the 
 not found, bad request, etc. results to the program runner.
 
-The second example is the [`Complete`](freeMonads/vanillaScala/Complete.scala) class.
+The second example is the [`Complete`](freeMonads/vanillaScala/single/Complete.scala) class.
 This version enhances the `Method` instances with functions like `ifEmpty` and 
 `ifError` that wrap the method call into another method call. This moves the non 
 happy cases into the the `handlePatchRequest` method.
 
-The third version is the [`Nested`](freeMonads.vanillaScala/Nested.scala) class.
+The third version is the [`Nested`](freeMonads.vanillaScala/single/Nested.scala) class.
 This version uses a nested structure. You can imagine this version being a one on 
 one representation from a white board session. The main process consists of three 
 sub routines which themselves can also be a process of multiple steps. There are 
@@ -236,9 +236,9 @@ well.
 
 All versions are implemented using Scalaz as well:
 
-- [`scalaz.HappyFlowOnly`](freeMonads/scalaz/HappyFlowOnly.scala)
-- [`scalaz.Complete`](freeMonads/scalaz/Complete.scala)
-- [`scalaz.Nested`](freeMonads/scalaz/Nested.scala)
+- [`scalaz.single.HappyFlowOnly`](freeMonads/scalaz/single/HappyFlowOnly.scala)
+- [`scalaz.single.Complete`](freeMonads/scalaz/single/Complete.scala)
+- [`scalaz.single.Nested`](freeMonads/scalaz/single/Nested.scala)
 
 It is possible have multiple types of programs. In the above examples a program part 
 extends `Method[ReturnType]`, it is however possible to combine multiple types. This 

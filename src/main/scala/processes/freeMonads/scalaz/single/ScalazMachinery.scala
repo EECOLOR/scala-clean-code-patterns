@@ -1,19 +1,17 @@
-package processes.freeMonads.scalaz
+package processes.freeMonads.scalaz.single
 
-import scalaz.Free
 import scala.language.higherKinds
-import scalaz.Monad
-import scala.concurrent.Future
-import play.api.mvc.Result
-import scala.concurrent.ExecutionContext
 import scala.language.implicitConversions
+
 import processes.freeMonads.HttpResultImplementation
 import scalaz.Coyoneda
-import scalaz.~>
+import scalaz.Free
+import scalaz.Free.FreeC
+import scalaz.Monad
 
 trait ScalazMachinery extends HttpResultImplementation { 
 
-  implicit def toFree[F[_], A](fa: F[A]): Free.FreeC[F, A] =
+  implicit def toFree[F[_], A](fa: F[A]): FreeC[F, A] =
     Free.liftFC(fa)
 
   type Partial[F[_]] = {

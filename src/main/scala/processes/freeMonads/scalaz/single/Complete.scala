@@ -1,21 +1,16 @@
-package processes.freeMonads.scalaz
+package processes.freeMonads.scalaz.single
 
-import processes.PatchAssignment
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
-import play.api.mvc.Request
 import scala.concurrent.Future
-import play.api.mvc.Result
+
 import play.api.mvc.AnyContent
-import play.api.libs.json.JsPath
-import play.api.data.validation.ValidationError
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsError
+import play.api.mvc.Request
+import play.api.mvc.Result
+import processes.PatchAssignment
 import processes.Services
 import processes.freeMonads.CompleteProgramParts
-import scalaz.Coyoneda
-import scalaz.~>
 import processes.freeMonads.CompleteProgramRunner
+import scalaz.~>
+import scalaz.Free
 
 class Complete(protected val services: Services) extends PatchAssignment
   with ScalazMachinery with CompleteProgramParts with CompleteProgramRunner {
@@ -30,7 +25,7 @@ class Complete(protected val services: Services) extends PatchAssignment
         _ <- UpdateProfile(id, mergedProfile)
       } yield results.noContent
 
-    patchProgram.foldMap(Coyoneda.liftTF(PatchProgramRunner)).map(_.merge)
+    Free.runFC(patchProgram)(PatchProgramRunner).map(_.merge)
   }
 
   object PatchProgramRunner extends (Method ~> HttpResult) {

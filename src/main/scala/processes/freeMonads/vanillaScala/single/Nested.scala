@@ -1,6 +1,7 @@
-package processes.freeMonads.scalaz
+package processes.freeMonads.vanillaScala.single
 
 import scala.concurrent.Future
+
 import domain.Profile
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
@@ -9,12 +10,9 @@ import processes.PatchAssignment
 import processes.Services
 import processes.freeMonads.NestedProgramParts
 import processes.freeMonads.NestedProgramRunner
-import scalaz.Coyoneda
-import scalaz.Free
-import scalaz.~>
 
 class Nested(protected val services: Services) extends PatchAssignment
-  with ScalazMachinery with NestedProgramRunner with NestedProgramParts {
+  with Machinery with NestedProgramRunner with NestedProgramParts {
 
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result] = {
     val patchProgram =
@@ -24,8 +22,8 @@ class Nested(protected val services: Services) extends PatchAssignment
         response <- InternalRepresentationToResponse(serviceResult)
       } yield response
 
-    val serviceProgram = patchProgram.foldMap(Coyoneda.liftTF(PatchProgramRunner))
-    serviceProgram.foldMap(Coyoneda.liftTF(ServiceRunner)).map(_.merge)
+    val serviceProgram = patchProgram.run(PatchProgramRunner)
+    serviceProgram.run(ServiceRunner).map(_.merge)
   }
 
   sealed trait SubRoutine[T]
@@ -56,7 +54,7 @@ class Nested(protected val services: Services) extends PatchAssignment
       }
   }
 
-  type Routine[A] = Free.FreeC[Service, A]
+  type Routine[A] = Free[Service, A]
 
   protected def serviceResultToResponse(serviceResult: ServiceResult): Result =
     InternalRepresentationToResponse(serviceResult).result

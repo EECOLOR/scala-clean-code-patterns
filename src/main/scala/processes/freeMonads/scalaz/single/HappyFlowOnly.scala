@@ -1,4 +1,4 @@
-package processes.freeMonads.vanillaScala
+package processes.freeMonads.scalaz.single
 
 import scala.concurrent.Future
 
@@ -9,9 +9,11 @@ import processes.PatchAssignment
 import processes.Services
 import processes.freeMonads.HappyFlowOnlyProgramParts
 import processes.freeMonads.HappyFlowOnlyProgramRunner
+import scalaz.~>
+import scalaz.Free
 
 class HappyFlowOnly(protected val services: Services) extends PatchAssignment
-  with Machinery with HappyFlowOnlyProgramParts with HappyFlowOnlyProgramRunner {
+  with ScalazMachinery with HappyFlowOnlyProgramParts with HappyFlowOnlyProgramRunner {
 
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result] = {
     val patchProgram =
@@ -23,7 +25,7 @@ class HappyFlowOnly(protected val services: Services) extends PatchAssignment
         _ <- UpdateProfile(id, mergedProfile)
       } yield results.noContent
 
-    patchProgram.run(PatchProgramRunner).map(_.merge)
+    Free.runFC(patchProgram)(PatchProgramRunner).map(_.merge)
   }
 
   object PatchProgramRunner extends (Method ~> HttpResult) {
