@@ -365,4 +365,11 @@ not found, bad request, etc. results to the program runner. It is similar to 'si
 version and shows the basics of working with a program that consists of multiple 
 parts.
 
+The second example is the [`Complete`](freeMonads/vanillaScala/multiple/Complete.scala) class.
+This version uses separate program types for most aspects of the program. It also 
+introduces an approach to branching. Branching is one of those topics that is quite 
+tricky. It seems my brains are not meant to grasp it.   
+
+// TODO, add a generic way to remove a branch from a program
+
 *in progress*   

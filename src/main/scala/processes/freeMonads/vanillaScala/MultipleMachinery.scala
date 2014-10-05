@@ -8,7 +8,7 @@ trait MultipleMachinery extends SingleMachinery { self =>
   implicit def toFree[F[_], A, O[_]](fa: F[A])(
     implicit programType: ProgramType[O],
     insert: F ~> O): Free[O, A] =
-    FlatMap(insert(fa), (a: A) => Create(a))
+    Free.lift(insert(fa))
 
   trait +:[F[_], T]
   trait Nil
@@ -41,7 +41,7 @@ trait MultipleMachinery extends SingleMachinery { self =>
     def apply[F[_], G[_]] = new Co[F, G]
   }
 
-  implicit def identity[F[_]] = new (F ~> F) {
+  implicit def identityTransform[F[_]] = new (F ~> F) {
     def apply[A](fa: F[A]) = fa
   }
 

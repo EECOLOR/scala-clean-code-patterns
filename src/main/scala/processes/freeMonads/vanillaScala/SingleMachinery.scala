@@ -11,14 +11,15 @@ trait SingleMachinery extends HttpResultImplementation { self =>
 
   implicit protected def defaultExecutionContext: ExecutionContext
 
-  implicit def toFree[F[_], A](fa: F[A]): Free[F, A] =
-    FlatMap(fa, (a: A) => Create(a))
+  implicit def toFree[F[_], A](fa: F[A]): Free[F, A] = Free.lift(fa)
 
   trait ~>[-F[_], +G[_]] {
     def apply[A](fa: F[A]): G[A]
   }
 
   sealed trait Free[F[_], A] {
+    import Free.{Create, FlatMap}
+    
     def flatMap[B](f: A => Free[F, B]): Free[F, B] =
       this match {
         case Create(value) => f(value)
@@ -37,9 +38,16 @@ trait SingleMachinery extends HttpResultImplementation { self =>
       }
   }
 
-  case class Create[F[_], A](value: A) extends Free[F, A]
+  object Free {
+    def apply[F[_], A](a:A):Free[F, A] = Create(a)
+    
+    def lift[F[_], A](fa: F[A]): Free[F, A] = FlatMap(fa, (a: A) => Create(a))
 
-  case class FlatMap[F[_], A, B](fa: F[A], f: A => Free[F, B]) extends Free[F, B]
+    case class Create[F[_], A](value: A) extends Free[F, A]
+
+    case class FlatMap[F[_], A, B](fa: F[A], f: A => Free[F, B]) extends Free[F, B]
+    
+  }
 
   trait Monad[F[_]] {
     def create[A](a: A): F[A]
@@ -50,7 +58,7 @@ trait SingleMachinery extends HttpResultImplementation { self =>
     type Free[A] = self.Free[F, A]
   }
   implicit def freeMonad[F[_]] = new Monad[Partial[F]#Free] {
-    def create[A](a: A) = Create(a)
+    def create[A](a: A) = Free(a)
     def flatMap[A, B](fa: Free[F, A])(f: A => Free[F, B]) =
       fa.flatMap(f)
   }
