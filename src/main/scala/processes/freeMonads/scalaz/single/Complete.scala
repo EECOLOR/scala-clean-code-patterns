@@ -1,19 +1,19 @@
 package processes.freeMonads.scalaz.single
 
 import scala.concurrent.Future
-
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
 import processes.PatchAssignment
 import processes.Services
-import processes.freeMonads.CompleteProgramParts
-import processes.freeMonads.CompleteProgramRunner
+import processes.freeMonads.single.CompleteProgramParts
+import processes.freeMonads.single.CompleteProgramRunner
+import processes.freeMonads.scalaz.SingleMachinery
 import scalaz.~>
 import scalaz.Free
 
 class Complete(protected val services: Services) extends PatchAssignment
-  with ScalazMachinery with CompleteProgramParts with CompleteProgramRunner {
+  with SingleMachinery with CompleteProgramParts with CompleteProgramRunner {
 
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result] = {
     val patchProgram =

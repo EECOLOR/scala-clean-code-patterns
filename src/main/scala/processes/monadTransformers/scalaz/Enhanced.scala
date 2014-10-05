@@ -6,7 +6,7 @@ import processes.PatchAssignment
 import processes.monadTransformers.Enhancements
 import processes.Services
 
-class Enhanced(services:Services) extends PatchAssignment with ScalazMachinery with Enhancements {
+class Enhanced(services:Services) extends PatchAssignment with Machinery with Enhancements {
 
   def handlePatchRequest(id: String, request: Request[AnyContent]) = {
     val patchProgram =

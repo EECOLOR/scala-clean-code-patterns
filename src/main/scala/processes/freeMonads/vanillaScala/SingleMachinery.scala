@@ -1,4 +1,4 @@
-package processes.freeMonads.vanillaScala.single
+package processes.freeMonads.vanillaScala
 
 import scala.language.higherKinds
 import scala.language.implicitConversions
@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import play.api.mvc.Result
 import processes.freeMonads.HttpResultImplementation
 
-trait Machinery extends HttpResultImplementation { self =>
+trait SingleMachinery extends HttpResultImplementation { self =>
 
   implicit protected def defaultExecutionContext: ExecutionContext
 

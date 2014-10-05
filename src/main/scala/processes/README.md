@@ -165,13 +165,15 @@ we get `map` and `flatMap` for free!
 ```scala
 implicit def toFree[F[_], A](fa: F[A]): Free[F, A] = ???
 
-val program:Free[ReturnType, String] =
+val program =
   for {
     a <- MyMethod("test", 8)
     b <- MyMethod("green", 4)
   } yield {
     if (a && b) "yes" else "no"
   }
+
+// The type of the program is Free[ReturnType, String]  
 ```
 
 You might have noticed that `Free` captures both the `F[_]` type (here `ReturnType`) and 
@@ -243,7 +245,7 @@ All versions are implemented using Scalaz as well:
 It is possible have multiple types of programs. In the above examples a program part 
 extends `Method[ReturnType]`, it is however possible to combine multiple types. This 
 is done using a type called `Coproduct`. `Coproduct` is similar to `Either`, but it 
-operates on container types. We could have a `Coproduct` that represents an `String` 
+operates on container types. We could have a `Coproduct` that represents a `String` 
 in `F[_]` or `G[_]`. With `Either` we can only represent `F[String]` or `G[String]` 
 loosing the information that `F` and `G` are container types.
 
@@ -253,5 +255,114 @@ also allow us to compose programs more freely and from different sources.
 The talk [Compositional application architecture with reasonably priced monads](https://parleys.com/play/53a7d2c3e4b0543940d9e538) 
 with [the slides](https://t.co/QsBDMDqGGE) and [code](https://gist.github.com/runarorama/a8fab38e473fafa0921d) by Rúnar Bjarnason provide a good explanation about this 
 topic. 
+
+The basics are the same but because we are using multiple program types, the 
+definition of the implicit conversion to `Free` looks different:
+
+```scala
+implicit def toFree[F[_], A, O[_]](fa: F[A])(
+  implicit programType: ProgramType[O], insert: F ~> O): Free[O, A] =
+  
+trait ProgramType[F[_]]
+```
+
+As you can see we introduced a trait called `ProgramType` that acts as a magnet for 
+the resulting program type `O[_]`. Let's say that the program type `O[_]` is 
+`Coproduct[Group1, Group2, _]`, then we need to have a way to insert a `GroupX` 
+instance at the correct location (left or right). We can use a natural 
+transformation to do that `F ~> O`. In our case we would have either
+`Group1 ~> Coproduct[Group1, Group2, _]` or `Group2 ~> Coproduct[Group1, Group2, _]`.
+
+Luckily we are able to generalize those natural transformations because they follow 
+a pattern. There are only 3 types of transformations:
+
+**`F ~> F`**
+
+When type `F` is equal to `O`.
+
+**`F ~> Coproduct[F, X, _]`**
+
+When `O` is a `Coproduct` and type `F` is at the left side.
+
+**`F ~> Coproduct[X, Y, _]`**
+
+When `O` is a `Coproduct` and there is a natural transformation for `F ~> Y` meaning
+it's in somewhere at the right side. `Y` here can be either `F` itself or another 
+`Coproduct`.
+
+A program using multiple program types then looks like this:
+
+```scala
+type Co[F[_], G[_]] = {
+  type Product[A] = Coproduct[F, G, A]
+}
+/*
+  In my opinion a type alias is more clear than an anonymous type (or type lambda), 
+  we could have wrote `({ type T[A] = Coproduct[Group1, Group2, A] })#T` instead 
+  of `Co[Group1, Group2]#Product`
+*/ 
+implicit val programType:ProgramType[Co[Group1, Group2]#Product] = null
+
+val program =
+  for {
+    value1 <- Group1Method()
+    value2 <- Group2Method(value1)
+  } yield value2
+```
+
+Note: In the examples I use another way of creating the program type, for the above 
+example it looks like this:
+
+```scala
+implicit val programType = ProgramType[Group1 +: Group2 +: Nil]
+```
+
+The result is the same, but it uses some type level ninja stuff to keep things 
+readable. You can imagine things become unreadable quite fast with multiple nested 
+coproducts.
+
+Running a combined program gives us two challenges. The first is that we have runners
+for the different parts of the program that need to be combined. The second is that 
+these runners not necessarily result in the same type.
+
+To overcome these problems we need an `or` and `andThen` function for our natural 
+transformations. 
+
+The `or` function allows us to combine runners (that result in the same type) into a
+runner that can handle coproducts. It has the following signature: 
+
+`or[F[_], G[_], H[_](fToH: F ~> H, gToH: G ~> H): Co[F, G]#Product ~> H`
+
+The `andThen` function allows us to chain runners. We can use it to align the types 
+(required for the `or` method). It has the following signature:
+
+`andThen[F[_], G[_], H[_]](fToG: F ~> G, gToH: G ~> H):F ~> H`
+
+Runners for the above program could look like this:
+
+```scala
+val programRunner = {
+  val group1Runner = Group1Runner andThen IdToFuture
+  Group2Runner or group1Runner
+} 
+
+object Group1Runner extends (Group1 ~> Id) {
+  ...
+}
+
+object Group2Runner extends (Group2 ~> Future) {
+  ...
+}
+
+object IdToFuture extends (Id ~> Future) {
+  ...
+}
+```
+
+The first example is the [`HappyFlowOnly`](freeMonads/vanillaScala/multiple/HappyFlowOnly.scala) class.
+This version focuses on the happy flow of the program and moves handling of the 
+not found, bad request, etc. results to the program runner. It is similar to 'single' 
+version and shows the basics of working with a program that consists of multiple 
+parts.
 
 *in progress*   

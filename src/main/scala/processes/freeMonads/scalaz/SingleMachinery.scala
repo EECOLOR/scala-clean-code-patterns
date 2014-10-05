@@ -1,4 +1,4 @@
-package processes.freeMonads.scalaz.single
+package processes.freeMonads.scalaz
 
 import scala.language.higherKinds
 import scala.language.implicitConversions
@@ -9,7 +9,7 @@ import scalaz.Free
 import scalaz.Free.FreeC
 import scalaz.Monad
 
-trait ScalazMachinery extends HttpResultImplementation { 
+trait SingleMachinery extends HttpResultImplementation { 
 
   implicit def toFree[F[_], A](fa: F[A]): FreeC[F, A] =
     Free.liftFC(fa)

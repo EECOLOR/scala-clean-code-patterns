@@ -1,4 +1,4 @@
-package processes.freeMonads
+package processes.freeMonads.single
 
 import processes.Services
 import play.api.libs.json.JsSuccess
@@ -7,6 +7,9 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import scala.concurrent.Future
 import play.api.mvc.AnyContent
+import scala.Left
+import scala.Right
+import processes.freeMonads.HttpResultImplementation
 
 trait NestedProgramRunner { _: NestedProgramParts with HttpResultImplementation =>
 

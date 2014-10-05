@@ -10,7 +10,7 @@ import scalaz.Scalaz.ToOptionOpsFromOption
 import scalaz.\/
 import scalaz.\/-
 
-trait ScalazMachinery extends HttpResultImplementation {
+trait Machinery extends HttpResultImplementation {
   
   type EitherT[F[_], A, B] = scalaz.EitherT[F, A, B]
   type Either[+A, +B] = A \/ B

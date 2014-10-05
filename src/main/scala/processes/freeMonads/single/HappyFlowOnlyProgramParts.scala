@@ -1,4 +1,4 @@
-package processes.freeMonads
+package processes.freeMonads.single
 
 import domain.Profile
 import play.api.libs.json.JsValue

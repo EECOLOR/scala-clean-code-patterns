@@ -1,4 +1,4 @@
-package processes.freeMonads
+package processes.freeMonads.single
 
 import processes.Services
 import play.api.libs.json.JsSuccess
@@ -7,6 +7,9 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import scala.concurrent.Future
 import play.api.mvc.AnyContent
+import processes.freeMonads.HttpResultImplementation
+import scala.Left
+import scala.Right
 
 trait CompleteProgramRunner { _: CompleteProgramParts with HttpResultImplementation =>
 

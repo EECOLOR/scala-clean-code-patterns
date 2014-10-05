@@ -1,4 +1,4 @@
-package processes.freeMonads
+package processes.freeMonads.single
 
 import play.api.libs.json.JsPath
 import play.api.data.validation.ValidationError

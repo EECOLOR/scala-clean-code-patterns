@@ -5,7 +5,7 @@ import play.api.mvc.Request
 import processes.PatchAssignment
 import processes.Services
 
-class Plain(services:Services) extends PatchAssignment with ScalazMachinery {
+class Plain(services:Services) extends PatchAssignment with Machinery {
 
   def handlePatchRequest(id: String, request: Request[AnyContent]) = {
     val patchProgram =

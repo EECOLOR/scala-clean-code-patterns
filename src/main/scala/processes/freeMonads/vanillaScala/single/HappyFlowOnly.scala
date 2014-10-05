@@ -7,11 +7,12 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import processes.PatchAssignment
 import processes.Services
-import processes.freeMonads.HappyFlowOnlyProgramParts
-import processes.freeMonads.HappyFlowOnlyProgramRunner
+import processes.freeMonads.single.HappyFlowOnlyProgramParts
+import processes.freeMonads.single.HappyFlowOnlyProgramRunner
+import processes.freeMonads.vanillaScala.SingleMachinery
 
 class HappyFlowOnly(protected val services: Services) extends PatchAssignment
-  with Machinery with HappyFlowOnlyProgramParts with HappyFlowOnlyProgramRunner {
+  with SingleMachinery with HappyFlowOnlyProgramParts with HappyFlowOnlyProgramRunner {
 
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result] = {
     val patchProgram =

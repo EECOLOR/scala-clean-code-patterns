@@ -1,10 +1,12 @@
-package processes.freeMonads
+package processes.freeMonads.single
 
 import play.api.mvc.Request
 import scala.concurrent.Future
 import play.api.mvc.AnyContent
 import processes.Services
 import processes.PatchAssignment
+import processes.freeMonads.HttpResultImplementation
+import scala.Right
 
 trait HappyFlowOnlyProgramRunner { _:HttpResultImplementation with HappyFlowOnlyProgramParts with PatchAssignment =>
 

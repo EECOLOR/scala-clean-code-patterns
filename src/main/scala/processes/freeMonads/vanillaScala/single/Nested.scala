@@ -8,11 +8,12 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import processes.PatchAssignment
 import processes.Services
-import processes.freeMonads.NestedProgramParts
-import processes.freeMonads.NestedProgramRunner
+import processes.freeMonads.single.NestedProgramParts
+import processes.freeMonads.single.NestedProgramRunner
+import processes.freeMonads.vanillaScala.SingleMachinery
 
 class Nested(protected val services: Services) extends PatchAssignment
-  with Machinery with NestedProgramRunner with NestedProgramParts {
+  with SingleMachinery with NestedProgramRunner with NestedProgramParts {
 
   protected def handlePatchRequest(id: String, request: Request[AnyContent]): Future[Result] = {
     val patchProgram =
