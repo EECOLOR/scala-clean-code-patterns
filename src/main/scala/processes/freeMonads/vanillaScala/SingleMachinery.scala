@@ -18,8 +18,8 @@ trait SingleMachinery extends HttpResultImplementation { self =>
   }
 
   sealed trait Free[F[_], A] {
-    import Free.{Create, FlatMap}
-    
+    import Free.{ Create, FlatMap }
+
     def flatMap[B](f: A => Free[F, B]): Free[F, B] =
       this match {
         case Create(value) => f(value)
@@ -39,14 +39,14 @@ trait SingleMachinery extends HttpResultImplementation { self =>
   }
 
   object Free {
-    def apply[F[_], A](a:A):Free[F, A] = Create(a)
-    
+    def apply[F[_], A](a: A): Free[F, A] = Create(a)
+
     def lift[F[_], A](fa: F[A]): Free[F, A] = FlatMap(fa, (a: A) => Create(a))
 
     case class Create[F[_], A](value: A) extends Free[F, A]
 
     case class FlatMap[F[_], A, B](fa: F[A], f: A => Free[F, B]) extends Free[F, B]
-    
+
   }
 
   trait Monad[F[_]] {

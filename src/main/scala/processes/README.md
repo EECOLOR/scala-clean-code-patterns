@@ -370,6 +370,11 @@ This version uses separate program types for most aspects of the program. It als
 introduces an approach to branching. Branching is one of those topics that is quite 
 tricky. It seems my brains are not meant to grasp it.   
 
-// TODO, add a generic way to remove a branch from a program
+The third example is the [`CompleteAlternative`](freeMonads/vanillaScala/multiple/CompleteAlternative.scala) class.
+This version is very similar to `Complete`, it however adds some (complicated) code 
+that allows you to remove a branch from a program before running it. This can (of 
+course) only be done when the branch and program result type are the same. The 
+resulting program can be run more easily as we do not require an `Either` as a 
+result.
 
 *in progress*   
